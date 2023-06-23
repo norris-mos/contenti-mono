@@ -19,6 +19,42 @@ export default function (
 ): express.Router {
   const router = express.Router();
 
+  router.get(
+    '/new',
+    async (req: IRequestWithLanguage & IRequestWithUser, res) => {
+      const page = await h5pEditor.render(
+        undefined,
+        languageOverride === 'auto' ? req.language ?? 'en' : languageOverride,
+        req.user
+      );
+      res.send(page);
+      res.status(200).end();
+    }
+  );
+
+  router.post('/new', async (req: IRequestWithUser, res) => {
+    if (
+      !req.body.params ||
+      !req.body.params.params ||
+      !req.body.params.metadata ||
+      !req.body.library ||
+      !req.user
+    ) {
+      res.status(400).send('Malformed request').end();
+      return;
+    }
+    const contentId = await h5pEditor.saveOrUpdateContent(
+      undefined,
+      req.body.params.params,
+      req.body.params.metadata,
+      req.body.library,
+      req.user
+    );
+
+    res.send(JSON.stringify({ contentId }));
+    res.status(200).end();
+  });
+
   router.get('/test', async (req, res) => {
     res.send('This is the test endpoint');
   });
