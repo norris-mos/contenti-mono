@@ -21,12 +21,14 @@ export default function (
 
   router.get(
     '/new',
+
     async (req: IRequestWithLanguage & IRequestWithUser, res) => {
       const page = await h5pEditor.render(
         undefined,
         languageOverride === 'auto' ? req.language ?? 'en' : languageOverride,
         req.user
       );
+
       res.send(page);
       res.status(200).end();
     }
@@ -68,6 +70,19 @@ export default function (
       );
       res.send(content);
       res.status(200).end();
+    } catch (error) {
+      res.status(500).end(error.message);
+    }
+  });
+
+  router.get('/eg', async (req: IRequestWithUser, res) => {
+    try {
+      const page = await h5pEditor.render(
+        undefined,
+        languageOverride === 'auto' ? req.language ?? 'en' : languageOverride,
+        req.user
+      );
+      res.send(page);
     } catch (error) {
       res.status(500).end(error.message);
     }

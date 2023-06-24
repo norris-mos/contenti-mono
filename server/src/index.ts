@@ -277,6 +277,14 @@ const start = async (): Promise<void> => {
   // endpoints. You can add an options object as a last parameter to configure
   // which endpoints you want to use. In this case we don't pass an options
   // object, which means we get all of them.
+  //
+  // so anything going to /h5p will first be handled by this middleware
+
+  /*  In summary, the h5pAjaxExpressRouter middleware intercepts HTTP requests made to the
+  /h5p endpoint and handles them based on the H5P-related functionality required, such as retrieving, 
+  creating, updating, or deleting H5P content. It acts as a bridge between the client-side application
+   and the server-side H5P functionality, facilitating the communication and processing of H5P-related operations.*/
+
   server.use(
     h5pEditor.config.baseUrl,
     csrfProtection,
