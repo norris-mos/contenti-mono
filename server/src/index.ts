@@ -191,9 +191,22 @@ const start = async (): Promise<void> => {
 
   // i removed the authorization header
   server.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, csrf-token');
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://www.getpostman.com',
+    ];
+    const origin = req.headers.origin;
+
+    if (allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Content-Type, csrf-token, Authorization'
+    );
+    res.header('Access-Control-Allow-Credentials', 'true');
     next();
   });
 
@@ -286,19 +299,30 @@ const start = async (): Promise<void> => {
   creating, updating, or deleting H5P content. It acts as a bridge between the client-side application
    and the server-side H5P functionality, facilitating the communication and processing of H5P-related operations.*/
 
+  // server.use(
+  //   h5pEditor.config.baseUrl,
+  //   csrfProtection,
+  //   h5pAjaxExpressRouter(
+  //     h5pEditor,
+  //     path.resolve('h5p/core'), // the path on the local disc where the
+  //     // files of the JavaScript client of the player are stored
+  //     path.resolve('h5p/editor'), // the path on the local disc where the
+  //     // files of the JavaScript client of the editor are stored
+  //     undefined,
+  //     'auto' // You can change the language of the editor here by setting
+  //     // the language code you need here. 'auto' means the route will try
+  //     // to use the language detected by the i18next language detector.
+  //   )
+  // );
+
   server.use(
     h5pEditor.config.baseUrl,
-    csrfProtection,
     h5pAjaxExpressRouter(
       h5pEditor,
-      path.resolve('h5p/core'), // the path on the local disc where the
-      // files of the JavaScript client of the player are stored
-      path.resolve('h5p/editor'), // the path on the local disc where the
-      // files of the JavaScript client of the editor are stored
+      path.resolve('h5p/core'),
+      path.resolve('h5p/editor'),
       undefined,
-      'auto' // You can change the language of the editor here by setting
-      // the language code you need here. 'auto' means the route will try
-      // to use the language detected by the i18next language detector.
+      'auto'
     )
   );
 
@@ -307,35 +331,50 @@ const start = async (): Promise<void> => {
   // - Editing content
   // - Saving content
   // - Deleting content
+  // server.use(
+  //   h5pEditor.config.baseUrl,
+  //   csrfProtection,
+  //   // We need to add the token to the user by adding the addCsrfTokenToUser
+  //   // middleware, so that the UrlGenerator can read it when we generate the
+  //   // integration object with the URLs that contain the token.
+  //   addCsrfTokenToUser,
+  //   restExpressRoutes(
+  //     h5pEditor,
+  //     h5pPlayer,
+  //     'auto' // You can change the language of the editor here by setting
+  //     // the language code you need here. 'auto' means the route will try
+  //     // to use the language detected by the i18next language detector.
+  //   )
+  // );
+
   server.use(
     h5pEditor.config.baseUrl,
-    csrfProtection,
-    // We need to add the token to the user by adding the addCsrfTokenToUser
-    // middleware, so that the UrlGenerator can read it when we generate the
-    // integration object with the URLs that contain the token.
-    addCsrfTokenToUser,
-    restExpressRoutes(
-      h5pEditor,
-      h5pPlayer,
-      'auto' // You can change the language of the editor here by setting
-      // the language code you need here. 'auto' means the route will try
-      // to use the language detected by the i18next language detector.
-    )
+
+    restExpressRoutes(h5pEditor, h5pPlayer, 'auto')
   );
 
   // The LibraryAdministrationExpress routes are REST endpoints that offer
   // library management functionality.
+  // server.use(
+  //   `${h5pEditor.config.baseUrl}/libraries`,
+  //   csrfProtection,
+  //   libraryAdministrationExpressRouter(h5pEditor)
+  // );
   server.use(
     `${h5pEditor.config.baseUrl}/libraries`,
-    csrfProtection,
     libraryAdministrationExpressRouter(h5pEditor)
   );
 
   // The ContentTypeCacheExpress routes are REST endpoints that allow updating
   // the content type cache manually.
+  // server.use(
+  //   `${h5pEditor.config.baseUrl}/content-type-cache`,
+  //   csrfProtection,
+  //   contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
+  // );
+
   server.use(
     `${h5pEditor.config.baseUrl}/content-type-cache`,
-    csrfProtection,
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
   );
 
