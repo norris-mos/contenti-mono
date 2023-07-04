@@ -1,4 +1,4 @@
-import { OpenAI } from 'langchain/llms/openai';
+const { OpenAI } = require('langchain/llms/openai');
 import { PromptTemplate } from 'langchain/prompts';
 
 const OPENAI_API_KEY = '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';
