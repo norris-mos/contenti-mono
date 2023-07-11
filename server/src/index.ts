@@ -378,7 +378,7 @@ const start = async (): Promise<void> => {
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
   );
 
-  // make sure to get the correct content names
+  // make sure to get the correct content names testin
 
   server.post('/prompt/:content_type', async (req, res) => {
     const contentTemplate = req.header('Content-Type');
