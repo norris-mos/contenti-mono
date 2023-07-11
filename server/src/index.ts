@@ -378,6 +378,23 @@ const start = async (): Promise<void> => {
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
   );
 
+  // make sure to get the correct content names
+
+  server.post('/prompt/:content_type', async (req, res) => {
+    const contentTemplate = req.header('Content-Type');
+    const promptString = req.body;
+
+    switch (contentTemplate) {
+      case 'H5P.DragText 1.10':
+        res.send('This is working');
+        break;
+
+      default:
+        res.status(400).send('This content is not recognized');
+        break;
+    }
+  });
+
   // Simple login endpoint that returns HTTP 200 on auth and sets the user in
   // the session
   server.post(

@@ -86,16 +86,39 @@ export class ContentService implements IContentService {
     );
   };
 
+  // Just need to be careful about the base url not redirecting the /h5p/prompt
+
   prompt = async (
-    prompt: string,
-    contenttype: string
+    promptText: string,
+    contentType: string
   ): Promise<{ contentId: string; metadata: IContentMetadata }> => {
     console.log('Generating content...');
-    const result = await fetch(`${this.baseUrl}/prompt/${contenttype}`);
-    if (!result || !result.ok) {
-      throw new Error(`${result.status} ${result.statusText}`);
+
+    const url = `http://localhost:8080/prompt/${contentType}`;
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: promptText,
+    };
+
+    console.log(requestOptions);
+
+    try {
+      const response = await fetch(url, requestOptions);
+
+      if (!response.ok) {
+        console.log('fetch is not working');
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-    return result.json();
   };
 
   save = async (

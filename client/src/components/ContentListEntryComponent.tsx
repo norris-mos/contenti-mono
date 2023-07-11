@@ -264,7 +264,7 @@ export default class ContentListEntryComponent extends React.Component<{
 
                 <button
                   className="generate-button"
-                  /*onClick={() => this.prompt(this.state.inputValue)}*/
+                  onClick={() => this.prompt(this.state.inputValue)}
                 >
                   Generate
                 </button>
@@ -378,9 +378,19 @@ export default class ContentListEntryComponent extends React.Component<{
   //generate button. This will call a method from the content service.
   // the method in the content service will send a post request to the server
   // the server will have an endpoint that accepts text and a content type.
-  //   protected async prompt(prompt: string) {
-  //     const res = this.props.contentService.prompt();
-  //   }
+
+  // get an error box to pop up.
+  protected async prompt(prompt: string) {
+    const ctype =
+      this.h5pEditor.current?.h5pEditor?.current?.editorInstance?.selector
+        ?.currentLibrary;
+    if (!ctype) {
+      console.log('No content type has been selected');
+    } else {
+      console.log(`${ctype} has successfully been selected`);
+      const res = await this.props.contentService.prompt(prompt, ctype);
+    }
+  }
 
   protected onSaveError = async (event: any) => {
     this.setState({
