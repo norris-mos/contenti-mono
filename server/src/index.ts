@@ -23,6 +23,7 @@ import User from './User';
 import createH5PEditor from './createH5PEditor';
 import { displayIps, clearTempFiles } from './utils';
 
+import { H5PDragText } from './langChaintemplate';
 // this defines a temp dir of type directoryresult
 let tmpDir: DirectoryResult;
 
@@ -378,15 +379,21 @@ const start = async (): Promise<void> => {
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
   );
 
+  server.use(bodyParser.json());
+
   // make sure to get the correct content names testin
 
   server.post('/prompt/:content_type', async (req, res) => {
-    const contentTemplate = req.header('Content-Type');
-    const promptString = req.body;
-
-    switch (contentTemplate) {
+    switch (req.body.contentType) {
       case 'H5P.DragText 1.10':
-        res.send('This is working');
+        const resp = H5PDragText(req.body.promptText);
+
+        // const delay = (ms: number) =>
+        //   new Promise<void>((resolve) => setTimeout(resolve, ms));
+        // await delay(10000);
+        console.log(resp);
+        //res.send(JSON.stringify(resp));
+
         break;
 
       default:
