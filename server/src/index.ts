@@ -386,13 +386,14 @@ const start = async (): Promise<void> => {
   server.post('/prompt/:content_type', async (req, res) => {
     switch (req.body.contentType) {
       case 'H5P.DragText 1.10':
-        const resp = H5PDragText(req.body.promptText);
+        const resp = await H5PDragText(req.body.promptText);
 
         // const delay = (ms: number) =>
         //   new Promise<void>((resolve) => setTimeout(resolve, ms));
         // await delay(10000);
-        console.log(resp);
-        //res.send(JSON.stringify(resp));
+
+        // console.log(resp);
+        res.json(resp);
 
         break;
 

@@ -330,7 +330,6 @@ export default class ContentListEntryComponent extends React.Component<{
     if (element.value === 'Describe what activity you would like to make')
       element.value = '';
   }
-
   protected edit() {
     this.setState({ editing: true, playing: false });
   }

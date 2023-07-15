@@ -3,6 +3,7 @@ import type {
   IPlayerModel,
   IContentMetadata,
 } from '@lumieducation/h5p-server';
+import { json } from 'stream/consumers';
 
 export interface IContentListEntry {
   contentId: string;
@@ -99,12 +100,10 @@ export class ContentService implements IContentService {
     const requestOptions: RequestInit = {
       method: 'POST',
       headers: {
-        'Content-Type': contentType,
+        'Content-Type': 'application/json',
       },
-      body: promptText,
+      body: JSON.stringify({ promptText, contentType }),
     };
-
-    console.log(requestOptions);
 
     try {
       const response = await fetch(url, requestOptions);
