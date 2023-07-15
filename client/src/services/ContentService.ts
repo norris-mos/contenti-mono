@@ -21,10 +21,7 @@ export interface IContentService {
     contentId: string,
     requestBody: { library: string; params: any }
   ): Promise<{ contentId: string; metadata: IContentMetadata }>;
-  prompt(
-    prompt: string,
-    contenttype: string
-  ): Promise<{ contentId: string; metadata: IContentMetadata }>;
+  prompt(prompt: string, contenttype: string): Promise<IEditorModel>;
   generateDownloadLink(contentId: string): string;
 }
 
@@ -92,7 +89,7 @@ export class ContentService implements IContentService {
   prompt = async (
     promptText: string,
     contentType: string
-  ): Promise<{ contentId: string; metadata: IContentMetadata }> => {
+  ): Promise<IEditorModel> => {
     console.log('Generating content...');
 
     const url = `http://localhost:8080/prompt/${contentType}`;
@@ -112,8 +109,15 @@ export class ContentService implements IContentService {
         console.log('fetch is not working');
         throw new Error(`${response.status} ${response.statusText}`);
       }
+      const responseJSON = await response.json();
+      console.log('here is the response body object');
+      console.log(responseJSON.params);
+      //this.save(undefined);
+      const promptSave = await this.save(contentType, responseJSON);
 
-      return response.json();
+      const promptEdit = this.getEdit(promptSave.contentId);
+
+      return promptEdit;
     } catch (error) {
       console.log(error);
       throw error;
@@ -125,15 +129,17 @@ export class ContentService implements IContentService {
     requestBody: { library: string; params: any }
   ): Promise<{ contentId: string; metadata: IContentMetadata }> => {
     if (contentId) {
+      console.log(requestBody.params);
+      console.log(requestBody.library);
       console.log(`ContentService: Saving new content.`);
     } else {
-      console.log(`csrrf is ${this.csrfToken}`);
+      console.log(requestBody.params);
+
       console.log(`the content id is ${contentId} i think`);
       console.log(`ContentService: Savin content ${contentId}`);
     }
 
     const body = JSON.stringify(requestBody);
-    console.log(body);
 
     const requestbod = {
       method: 'POST',

@@ -378,11 +378,12 @@ export default class ContentListEntryComponent extends React.Component<{
   // the method in the content service will send a post request to the server
   // the server will have an endpoint that accepts text and a content type.
 
-  // get an error box to pop up.
+  // get an error box to pop up. add the save() function to the output of the prompt
   protected async prompt(prompt: string) {
     const ctype =
       this.h5pEditor.current?.h5pEditor?.current?.editorInstance?.selector
         ?.currentLibrary;
+
     if (!ctype) {
       console.log('No content type has been selected');
     } else {
