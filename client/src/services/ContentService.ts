@@ -21,7 +21,10 @@ export interface IContentService {
     contentId: string,
     requestBody: { library: string; params: any }
   ): Promise<{ contentId: string; metadata: IContentMetadata }>;
-  prompt(prompt: string, contenttype: string): Promise<IEditorModel>;
+  prompt(
+    prompt: string,
+    contenttype: string
+  ): Promise<{ contentId: string; metadata: IContentMetadata }>;
   generateDownloadLink(contentId: string): string;
 }
 
@@ -89,7 +92,7 @@ export class ContentService implements IContentService {
   prompt = async (
     promptText: string,
     contentType: string
-  ): Promise<IEditorModel> => {
+  ): Promise<{ contentId: string; metadata: IContentMetadata }> => {
     console.log('Generating content...');
 
     const url = `http://localhost:8080/prompt/${contentType}`;
@@ -110,14 +113,15 @@ export class ContentService implements IContentService {
         throw new Error(`${response.status} ${response.statusText}`);
       }
       const responseJSON = await response.json();
-      console.log('here is the response body object');
-      console.log(responseJSON.params);
+      //console.log('here is the response body object');
+      console.log('content type', contentType);
+      console.log('response from langchain', responseJSON);
       //this.save(undefined);
-      const promptSave = await this.save(contentType, responseJSON);
+      const promptSave = await this.save('', responseJSON);
 
-      const promptEdit = this.getEdit(promptSave.contentId);
+      //const promptEdit = this.getEdit(promptSave.contentId);
 
-      return promptEdit;
+      return promptSave;
     } catch (error) {
       console.log(error);
       throw error;
@@ -129,18 +133,17 @@ export class ContentService implements IContentService {
     requestBody: { library: string; params: any }
   ): Promise<{ contentId: string; metadata: IContentMetadata }> => {
     if (contentId) {
-      console.log(requestBody.params);
-      console.log(requestBody.library);
       console.log(`ContentService: Saving new content.`);
     } else {
-      console.log(requestBody.params);
-
       console.log(`the content id is ${contentId} i think`);
       console.log(`ContentService: Savin content ${contentId}`);
     }
 
-    const body = JSON.stringify(requestBody);
+    //console.log(requestBody.library);
+    console.log(requestBody.params);
 
+    const body = JSON.stringify(requestBody);
+    //console.log('this is the content id', contentId);
     const requestbod = {
       method: 'POST',
       headers: {

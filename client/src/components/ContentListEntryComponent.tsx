@@ -30,6 +30,7 @@ import { H5PEditorUI, H5PPlayerUI } from '@lumieducation/h5p-react';
 
 import { IContentListEntry, IContentService } from '../services/ContentService';
 import './ContentListEntryComponent.css';
+import { runInNewContext, runInThisContext } from 'vm';
 
 export default class ContentListEntryComponent extends React.Component<{
   contentService: IContentService;
@@ -59,6 +60,7 @@ export default class ContentListEntryComponent extends React.Component<{
       saveError: false,
       showingCustomCopyright: false,
       inputValue: 'Please select a content type to start',
+      //promptEditing: false,
     };
     this.h5pEditor = React.createRef();
     this.saveButton = React.createRef();
@@ -389,6 +391,16 @@ export default class ContentListEntryComponent extends React.Component<{
     } else {
       console.log(`${ctype} has successfully been selected`);
       const res = await this.props.contentService.prompt(prompt, ctype);
+      if (res) {
+        this.props.onSaved({
+          contentId: res.contentId,
+          mainLibrary: res.metadata.mainLibrary,
+          title: res.metadata.title,
+          originalNewKey: this.props.data.originalNewKey,
+        });
+        //this.h5pEditor.current?.forceUpdate();
+        console.log('data object created successfully ');
+      }
     }
   }
 

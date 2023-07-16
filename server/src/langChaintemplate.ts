@@ -49,7 +49,7 @@ export async function H5PDragText(prompt: string) {
   //console.log(modelResponse);
   //console.log(parsedOutput.textField);
   //console.log(textField);
-  //console.log(description);
+  console.log(parsedOutput);
 
   const params = {
     taskDescription: `<p>${parsedOutput.description}</p>\n`,
@@ -94,8 +94,8 @@ export async function H5PDragText(prompt: string) {
     language: 'en',
     defaultLanguage: 'en-GB',
     license: 'U',
-    extraTitle: 'New',
-    title: 'New',
+    extraTitle: prompt,
+    title: prompt,
     mainLibrary: 'H5P.DragText',
     preloadedDependencies: [
       { machineName: 'FontAwesome', majorVersion: 4, minorVersion: 5 },
@@ -108,10 +108,11 @@ export async function H5PDragText(prompt: string) {
     ],
   };
   const toSave = {
-    library: metadata,
-    params: params,
+    library: 'H5P.DragText 1.10',
+    params: { params, metadata },
   };
-
+  console.log(toSave.library);
+  console.log(toSave.params);
   return toSave;
 
   // const chatPrompt = ChatPromptTemplate.fromPromptMessages([
