@@ -60,7 +60,7 @@ export default class ContentListEntryComponent extends React.Component<{
       saveError: false,
       showingCustomCopyright: false,
       inputValue: 'Please select a content type to start',
-      //promptEditing: false,
+      promptEdit: false,
     };
     this.h5pEditor = React.createRef();
     this.saveButton = React.createRef();
@@ -77,6 +77,7 @@ export default class ContentListEntryComponent extends React.Component<{
     saveErrorMessage: string;
     showingCustomCopyright: boolean;
     inputValue: string;
+    promptEdit: boolean;
   };
 
   private h5pPlayer: React.RefObject<H5PPlayerUI>;
@@ -243,6 +244,7 @@ export default class ContentListEntryComponent extends React.Component<{
           >
             <div className="h5p-input-container">
               <H5PEditorUI
+                key={this.state.promptEdit ? 'promptEdit' : 'regularEdit'}
                 ref={this.h5pEditor}
                 contentId={this.props.data.contentId}
                 loadContentCallback={this.props.contentService.getEdit}
@@ -398,7 +400,8 @@ export default class ContentListEntryComponent extends React.Component<{
           title: res.metadata.title,
           originalNewKey: this.props.data.originalNewKey,
         });
-        //this.h5pEditor.current?.forceUpdate();
+        this.setState({ promptEdit: true });
+
         console.log('data object created successfully ');
       }
     }
