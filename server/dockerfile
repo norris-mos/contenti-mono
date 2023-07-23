@@ -1,0 +1,23 @@
+# Use the official Node.js 14 image as the base image
+FROM node:latest
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json (if available) to the container
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+COPY tsconfig.json ./
+
+
+# Copy the rest of the client code to the container
+COPY . .
+
+# Expose the port your client application is running on
+EXPOSE 3000
+
+# Command to start your client application
+CMD ["npm", "start"]
