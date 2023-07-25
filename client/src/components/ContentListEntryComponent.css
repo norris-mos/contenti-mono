@@ -72,3 +72,26 @@
 .generate-button:focus {
   outline: none;
 }
+
+.star-rating {
+  position: absolute;
+  top: 500px; /* Adjust the top position as needed */
+  left: 90px; /* Adjust the left position as needed */
+  z-index: 1; /* Ensure the star rating appears above the textarea */
+}
+
+/* Add additional styles for the stars */
+.star-rating span {
+  font-size: 24px; /* Increase the font size of the stars */
+  color: #ffcc00; /* Change the color of the stars to yellow */
+  padding-right: 5px; /* Add some spacing between the stars */
+}
+
+/* Add styles for filled and empty stars */
+.star-rating .filled {
+  color: gold; /* Change the color for filled stars */
+}
+
+.star-rating .empty {
+  color: gray; /* Change the color for empty stars */
+}

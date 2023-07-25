@@ -12,6 +12,11 @@ export interface IContentListEntry {
   originalNewKey?: string;
 }
 
+interface IPromptResponses {
+  p1: Promise<{ contentId: string; metadata: IContentMetadata }>;
+  p2: Promise<{ contentId: string; metadata: IContentMetadata }>;
+}
+
 export interface IContentService {
   delete(contentId: string): Promise<void>;
   getEdit(contentId: string): Promise<IEditorModel>;
@@ -21,10 +26,7 @@ export interface IContentService {
     contentId: string,
     requestBody: { library: string; params: any }
   ): Promise<{ contentId: string; metadata: IContentMetadata }>;
-  prompt(
-    prompt: string,
-    contenttype: string
-  ): Promise<{ contentId: string; metadata: IContentMetadata }>;
+  prompt(prompt: string, contenttype: string): Promise<IPromptResponses>;
   generateDownloadLink(contentId: string): string;
 }
 
@@ -56,11 +58,16 @@ export class ContentService implements IContentService {
   };
 
   getEdit = async (contentId: string): Promise<IEditorModel> => {
+    console.log('is this evening updating');
     console.log(`ContentService: Getting information to edit ${contentId}...`);
+
+    console.log(`${this.baseUrl}/${contentId}/edit`);
     const res = await fetch(`${this.baseUrl}/${contentId}/edit`);
+
     if (!res || !res.ok) {
       throw new Error(`${res.status} ${res.statusText}`);
     }
+    console.log(res.json);
     return res.json();
   };
 
@@ -92,7 +99,7 @@ export class ContentService implements IContentService {
   prompt = async (
     promptText: string,
     contentType: string
-  ): Promise<{ contentId: string; metadata: IContentMetadata }> => {
+  ): Promise<IPromptResponses> => {
     console.log('Generating content...');
 
     const url = `http://localhost:8080/prompt/${contentType}`;
@@ -114,14 +121,42 @@ export class ContentService implements IContentService {
       }
       const responseJSON = await response.json();
       //console.log('here is the response body object');
-      console.log('content type', contentType);
-      console.log('response from langchain', responseJSON);
+      //console.log('content type', contentType);
+      //console.log('response from langchain', responseJSON);
       //this.save(undefined);
-      const promptSave = await this.save('', responseJSON);
+      //console.log('here is the responseJSON', responseJSON.model);
 
+      const promptSaveModel = responseJSON.model;
+      const promptSaveModel2 = responseJSON.model1;
+      console.log('response2', promptSaveModel2);
+
+      // const promptSave: { contentId: string; metadata: IContentMetadata } = {
+      //   contentId: promptSaveModel.contentId,
+      //   metadata: promptSaveModel.metadata,
+      // };
+
+      // const promptSave2: { contentId: string; metadata: IContentMetadata } = {
+      //   contentId: promptSaveModel2.contentId,
+      //   metadata: promptSaveModel2.metadata,
+      // };
+
+      const saveMethod = await this.save('', promptSaveModel);
+
+      const saveMethod2 = await this.save('', promptSaveModel2);
+      console.log('constent id of 1', saveMethod2.contentId);
+      console.log('content id of 2', saveMethod.contentId);
+      // const saveMethod2 = await this.save(
+      //   saveMethod.contentId + 'M2',
+      //   promptSaveModel2
+      // );
+      console.log('save two doesnt');
+      const responses: IPromptResponses = {
+        p1: Promise.resolve(saveMethod),
+        p2: Promise.resolve(saveMethod2),
+      };
       //const promptEdit = this.getEdit(promptSave.contentId);
 
-      return promptSave;
+      return responses;
     } catch (error) {
       console.log(error);
       throw error;
@@ -139,9 +174,6 @@ export class ContentService implements IContentService {
       console.log(`ContentService: Savin content ${contentId}`);
     }
 
-    //console.log(requestBody.library);
-    console.log(requestBody.params);
-
     const body = JSON.stringify(requestBody);
     //console.log('this is the content id', contentId);
     const requestbod = {
@@ -152,7 +184,7 @@ export class ContentService implements IContentService {
       },
       body: body,
     };
-    console.log(requestbod);
+    //console.log(requestbod);
 
     const res = contentId
       ? await fetch(`${this.baseUrl}/${contentId}`, {

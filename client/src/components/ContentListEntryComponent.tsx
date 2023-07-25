@@ -61,6 +61,10 @@ export default class ContentListEntryComponent extends React.Component<{
       showingCustomCopyright: false,
       inputValue: 'Please select a content type to start',
       promptEdit: false,
+      starRating: 0,
+      showStars: false,
+      swapPrompt: false,
+      secondPrompt: '',
     };
     this.h5pEditor = React.createRef();
     this.saveButton = React.createRef();
@@ -78,6 +82,10 @@ export default class ContentListEntryComponent extends React.Component<{
     showingCustomCopyright: boolean;
     inputValue: string;
     promptEdit: boolean;
+    starRating: number;
+    showStars: boolean;
+    swapPrompt: boolean;
+    secondPrompt: string;
   };
 
   private h5pPlayer: React.RefObject<H5PPlayerUI>;
@@ -232,6 +240,13 @@ export default class ContentListEntryComponent extends React.Component<{
                 </Col>
               </React.Fragment>
             ) : undefined}
+            {this.state.promptEdit ? (
+              <Col className="p-2" lg="auto">
+                <Button variant="primary" onClick={() => this.switchPrompt()}>
+                  Switch Prompt
+                </Button>
+              </Col>
+            ) : undefined}
           </Row>
         </Container>
         {this.state.editing ? (
@@ -243,18 +258,46 @@ export default class ContentListEntryComponent extends React.Component<{
             }
           >
             <div className="h5p-input-container">
-              <H5PEditorUI
-                key={this.state.promptEdit ? 'promptEdit' : 'regularEdit'}
-                ref={this.h5pEditor}
-                contentId={this.props.data.contentId}
-                loadContentCallback={this.props.contentService.getEdit}
-                saveContentCallback={this.props.contentService.save}
-                onSaved={this.onSaved}
-                onLoaded={this.onEditorLoaded}
-                onSaveError={this.onSaveError}
-              />
+              {this.state.swapPrompt ? (
+                <H5PEditorUI
+                  key={this.state.promptEdit ? 'promptEdit' : 'regularEdit'}
+                  ref={this.h5pEditor}
+                  contentId={'1073169946'}
+                  loadContentCallback={this.props.contentService.getEdit}
+                  saveContentCallback={this.props.contentService.save}
+                  onSaved={this.onSaved}
+                  onLoaded={this.onEditorLoaded}
+                  onSaveError={this.onSaveError}
+                />
+              ) : (
+                <H5PEditorUI
+                  key={this.state.promptEdit ? 'promptEdit' : 'regularEdit'}
+                  ref={this.h5pEditor}
+                  contentId={this.props.data.contentId}
+                  loadContentCallback={this.props.contentService.getEdit}
+                  saveContentCallback={this.props.contentService.save}
+                  onSaved={this.onSaved}
+                  onLoaded={this.onEditorLoaded}
+                  onSaveError={this.onSaveError}
+                />
+              )}
 
               <div className="input-wrapper">
+                {this.state.showStars && (
+                  <div className="star-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={
+                          star <= this.state.starRating ? 'filled' : 'empty'
+                        }
+                        onClick={() => this.handleStarRatingChange(star)}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <textarea
                   id="chatbox"
                   name="gpt"
@@ -338,6 +381,10 @@ export default class ContentListEntryComponent extends React.Component<{
     this.setState({ editing: true, playing: false });
   }
 
+  protected switchPrompt() {
+    this.setState({ swapPrompt: true });
+  }
+
   protected close() {
     this.setState({ editing: false, playing: false });
   }
@@ -362,6 +409,7 @@ export default class ContentListEntryComponent extends React.Component<{
     this.setState({ saving: true });
     try {
       const returnData = await this.h5pEditor.current?.save();
+
       if (returnData) {
         await this.props.onSaved({
           contentId: returnData.contentId,
@@ -393,14 +441,32 @@ export default class ContentListEntryComponent extends React.Component<{
     } else {
       console.log(`${ctype} has successfully been selected`);
       const res = await this.props.contentService.prompt(prompt, ctype);
+      console.log('this is res', res);
+
+      // this.props.onSaved({
+      //   contentId: res.p1.contentId,
+      //   mainLibrary: res.metadata.mainLibrary,
+      //   title: res.metadata.title,
+      //   originalNewKey: this.props.data.originalNewKey,
+      // });
+
       if (res) {
+        console.log('the dual prompt is working');
+        // this.props.onSaved({
+        //   contentId: (await res.p2).contentId,
+        //   mainLibrary: (await res.p2).metadata.mainLibrary,
+        //   title: (await res.p2).metadata.title,
+        //   originalNewKey: this.props.data.originalNewKey,
+        // });
+        this.setState({ generatedPrompt: (await res.p2).contentId });
         this.props.onSaved({
-          contentId: res.contentId,
-          mainLibrary: res.metadata.mainLibrary,
-          title: res.metadata.title,
+          contentId: (await res.p1).contentId,
+          mainLibrary: (await res.p1).metadata.mainLibrary,
+          title: (await res.p1).metadata.title,
           originalNewKey: this.props.data.originalNewKey,
         });
         this.setState({ promptEdit: true });
+        this.setState({ showStars: true });
 
         console.log('data object created successfully ');
       }
@@ -440,6 +506,10 @@ export default class ContentListEntryComponent extends React.Component<{
     this.setState({
       inputValue: `You have selected ${selectedElement}. What type of ${selectedElement} would you like to create`,
     });
+  };
+
+  handleStarRatingChange = (rating: number) => {
+    this.setState({ starRating: rating });
   };
 
   private isNew() {
