@@ -15,6 +15,11 @@ import {
 
 const OPENAI_API_KEY = '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';
 const model = new OpenAI({ openAIApiKey: OPENAI_API_KEY, temperature: 0.9 });
+const model1 = new OpenAI({
+  openAIApiKey: OPENAI_API_KEY,
+  temperature: 0.9,
+  modelName: 'gpt-3.5-turbo',
+});
 
 export async function H5PDragText(prompt: string) {
   // For chat models, we provide a `ChatPromptTemplate` class that can be used to format chat prompts.
@@ -29,7 +34,7 @@ export async function H5PDragText(prompt: string) {
 
   const promptTwo = new PromptTemplate({
     template:
-      "Embody an AI Teaching Assistant, responsible for crafting engaging educational resources. Your current task involves generating an interactive drag-and-drop exercise, where students fill in missing keywords denoted by asterisks. For instance, consider the example: 'Blueberries are blue. Strawberries are red. Cloudberries are orange.' Here, students are required to drag and drop the correct words where the asterisks are placed. Your task is to develop a similar exercise following the guidelines of a user-provided prompt, ensuring the missing words in your exercise are clearly marked with asterisks. \n{format_instructions}\n{user_prompt}",
+      "Embody an AI Teaching Assistant, responsible for crafting engaging educational resources. Your current task involves generating an interactive drag-and-drop exercise, where students fill in missing keywords denoted by asterisks. For instance, consider the example: 'Blueberries are *blue*. *Strawberries* are red. *Cloudberries* are orange.' Here, students are required to drag and drop the correct words where the asterisks are placed. Your task is to develop a similar exercise following the guidelines of a user-provided prompt, ensuring the missing words in your exercise are clearly marked with asterisks. \n{format_instructions}\n{user_prompt}",
     inputVariables: ['user_prompt'],
     partialVariables: { format_instructions: formatInstructions },
   });
@@ -38,12 +43,20 @@ export async function H5PDragText(prompt: string) {
     user_prompt: prompt,
   });
 
+  // this is for model 1
   const modelResponse = await model.call(input);
-
   const startIndex = modelResponse.indexOf('{');
   const endIndex = modelResponse.lastIndexOf('}') + 1;
   const jsonObjectString = modelResponse.substring(startIndex, endIndex);
   const parsedOutput = JSON.parse(jsonObjectString);
+
+  // this is for model 2
+  const modelResponse1 = await model1.call(input);
+  const startIndex1 = modelResponse1.indexOf('{');
+  const endIndex1 = modelResponse1.lastIndexOf('}') + 1;
+  const jsonObjectString1 = modelResponse1.substring(startIndex1, endIndex1);
+  const parsedOutput1 = JSON.parse(jsonObjectString1);
+
   // const textField = parsedOutput.properties.textField;
   // const description = parsedOutput.properties.description;
   //console.log(modelResponse);
@@ -107,12 +120,76 @@ export async function H5PDragText(prompt: string) {
       { machineName: 'H5P.DragText', majorVersion: 1, minorVersion: 10 },
     ],
   };
-  const toSave = {
-    library: 'H5P.DragText 1.10',
-    params: { params, metadata },
+
+  const params1 = {
+    taskDescription: `<p>${parsedOutput1.description}</p>\n`,
+    checkAnswer: 'Check',
+    tryAgain: 'Retry',
+    showSolution: 'Show Solution',
+    behaviour: {
+      enableRetry: true,
+      enableSolutionsButton: true,
+      instantFeedback: false,
+      enableCheckButton: true,
+    },
+    textField: parsedOutput1.textField,
+    overallFeedback: [
+      { from: 0, to: 100, feedback: 'Score: @score of @total.' },
+    ],
+    dropZoneIndex: 'Drop Zone @index.',
+    empty: 'Drop Zone @index is empty.',
+    contains: 'Drop Zone @index contains draggable @draggable.',
+    tipLabel: 'Show tip',
+    correctText: 'Correct!',
+    incorrectText: 'Incorrect!',
+    resetDropTitle: 'Reset drop',
+    resetDropDescription: 'Are you sure you want to reset this drop zone?',
+    grabbed: 'Draggable is grabbed.',
+    cancelledDragging: 'Cancelled dragging.',
+    correctAnswer: 'Correct answer:',
+    feedbackHeader: 'Feedback',
+    scoreBarLabel: 'You got :num out of :total points',
+    media: { disableImageZooming: false },
+    submitAnswer: 'Submit',
+    ariaDraggableIndex: '@index of @count draggables.',
+    a11yCheck:
+      'Check the answers. The responses will be marked as correct, incorrect, or unanswered.',
+    a11yShowSolution:
+      'Show the solution. The task will be marked with its correct solution.',
+    a11yRetry:
+      'Retry the task. Reset all responses and start the task over again.',
   };
-  console.log(toSave.library);
-  console.log(toSave.params);
+  const metadata1 = {
+    embedTypes: ['iframe'],
+    language: 'en',
+    defaultLanguage: 'en-GB',
+    license: 'U',
+    extraTitle: prompt,
+    title: prompt,
+    mainLibrary: 'H5P.DragText',
+    preloadedDependencies: [
+      { machineName: 'FontAwesome', majorVersion: 4, minorVersion: 5 },
+      { machineName: 'jQuery.ui', majorVersion: 1, minorVersion: 10 },
+      { machineName: 'H5P.JoubelUI', majorVersion: 1, minorVersion: 3 },
+      { machineName: 'H5P.Transition', majorVersion: 1, minorVersion: 0 },
+      { machineName: 'H5P.FontIcons', majorVersion: 1, minorVersion: 0 },
+      { machineName: 'H5P.Question', majorVersion: 1, minorVersion: 5 },
+      { machineName: 'H5P.DragText', majorVersion: 1, minorVersion: 10 },
+    ],
+  };
+
+  const toSave = {
+    model: {
+      library: 'H5P.DragText 1.10',
+      params: { params, metadata },
+    },
+    model1: {
+      library: 'H5P.DragText 1.10',
+      params: { params, metadata },
+    },
+  };
+  //console.log(toSave.model);
+  console.log(toSave.model1);
   return toSave;
 
   // const chatPrompt = ChatPromptTemplate.fromPromptMessages([
