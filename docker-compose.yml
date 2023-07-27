@@ -1,0 +1,36 @@
+version: '3.9' # Use the appropriate version of Docker Compose
+
+services:
+  client:
+    build:
+      context: ./client # The path to the client folder
+    ports:
+      - '3000:3000' # Map host port 8080 to container port 3000
+    networks:
+      - my_network
+
+  server:
+    build:
+      context: ./server # The path to the server folder
+    ports:
+      - '8080:8080' # Map host port 8000 to container port 8000
+    networks:
+      - my_network
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    container_name: my_postgres
+    environment:
+      POSTGRES_USER: contenti_user
+      POSTGRES_PASSWORD: contenti_password
+      POSTGRES_DB: contenti_database
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persist data using a named volume
+
+volumes:
+  pgdata: # Define the named volume to persist PostgreSQL data
+
+networks:
+  my_network:

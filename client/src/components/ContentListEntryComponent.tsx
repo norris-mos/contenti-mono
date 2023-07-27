@@ -31,6 +31,7 @@ import { H5PEditorUI, H5PPlayerUI } from '@lumieducation/h5p-react';
 import { IContentListEntry, IContentService } from '../services/ContentService';
 import './ContentListEntryComponent.css';
 import { runInNewContext, runInThisContext } from 'vm';
+import Label from './LabelsMetadataComponent';
 
 export default class ContentListEntryComponent extends React.Component<{
   contentService: IContentService;
@@ -65,6 +66,9 @@ export default class ContentListEntryComponent extends React.Component<{
       showStars: false,
       swapPrompt: false,
       secondPrompt: '',
+      showLabels: false,
+      promptEval: '',
+      selectedButtonIndex: '',
     };
     this.h5pEditor = React.createRef();
     this.saveButton = React.createRef();
@@ -86,6 +90,9 @@ export default class ContentListEntryComponent extends React.Component<{
     showStars: boolean;
     swapPrompt: boolean;
     secondPrompt: string;
+    showLabels: boolean;
+    promptEval: string;
+    selectedButtonIndex: string;
   };
 
   private h5pPlayer: React.RefObject<H5PPlayerUI>;
@@ -296,8 +303,61 @@ export default class ContentListEntryComponent extends React.Component<{
                         ★
                       </span>
                     ))}
+                    <div className="star-buttons">
+                      <button
+                        onClick={() =>
+                          this.handleButtonRatingChange2('Significantly Better')
+                        }
+                        className={
+                          this.state.selectedButtonIndex ===
+                          'Significantly Better'
+                            ? 'selected'
+                            : ''
+                        }
+                      >
+                        Significantly Better
+                      </button>
+                      <button
+                        onClick={() => this.handleButtonRatingChange2('Better')}
+                        className={
+                          this.state.selectedButtonIndex === 'Better'
+                            ? 'selected'
+                            : ''
+                        }
+                      >
+                        Better
+                      </button>
+                      <button
+                        onClick={() =>
+                          this.handleButtonRatingChange2('Slightly Better')
+                        }
+                        className={
+                          this.state.selectedButtonIndex === 'Slightly Better'
+                            ? 'selected'
+                            : ''
+                        }
+                      >
+                        Slightly Better
+                      </button>
+                      <button
+                        onClick={() =>
+                          this.handleButtonRatingChange2(
+                            'Negligibly Better/Unsure'
+                          )
+                        }
+                        className={
+                          this.state.selectedButtonIndex ===
+                          'Negligibly Better/Unsure'
+                            ? 'selected'
+                            : ''
+                        }
+                      >
+                        Negligibly Better / Unsure
+                      </button>
+                    </div>
                   </div>
                 )}
+
                 <textarea
                   id="chatbox"
                   name="gpt"
@@ -315,10 +375,32 @@ export default class ContentListEntryComponent extends React.Component<{
                 >
                   Generate
                 </button>
+                <Col className="p-2" lg="auto">
+                  <Button
+                    variant="primary"
+                    className="labels-button"
+                    onClick={this.toggleLabelsComponent}
+                  >
+                    Add Labels
+                  </Button>
+                </Col>
               </div>
             </div>
           </div>
         ) : undefined}
+        {this.state.showLabels && (
+          <Modal
+            show={this.state.showLabels}
+            onHide={this.toggleLabelsComponentoff}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Labels</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Label saveLabels={this.saveLabels} />
+            </Modal.Body>
+          </Modal>
+        )}
         {this.state.playing ? (
           <div className={this.state.loading ? 'loading' : ''}>
             <H5PPlayerUI
@@ -504,12 +586,43 @@ export default class ContentListEntryComponent extends React.Component<{
     const selectedElement = this.props.data.mainLibrary;
     console.log(selectedElement);
     this.setState({
-      inputValue: `You have selected ${selectedElement}. What type of ${selectedElement} would you like to create`,
+      inputValue: `You have selected ${selectedElement}. \nPlease try to be specific and creative in your prompting, examples include: \n\n1) Specifying particular pedagogical terms such as "aim higher questions" or "scaffolded questions".\n\n 2)Anchor the prompt to a specific syllabus e.g "Make sure the questions are suitable for GCSE english".   `,
     });
+  };
+
+  protected toggleLabelsComponent = () => {
+    this.setState(() => ({
+      showLabels: true, // Access the 'showLabels' directly
+    }));
+  };
+
+  protected toggleLabelsComponentoff = () => {
+    console.log('closing');
+    this.setState(() => ({
+      showLabels: false, // Access the 'showLabels' directly
+    }));
+  };
+
+  saveLabels = (selectedLabels: string[]) => {
+    // Process and save the selected labels here
+    // For example, you can store them in the component's state or call a service to save them
+    console.log('this should be closing');
+    this.toggleLabelsComponentoff(); // Close the modal when labels are saved
+    console.log('this should be closing');
+    console.log('Selected Labels:', selectedLabels);
   };
 
   handleStarRatingChange = (rating: number) => {
     this.setState({ starRating: rating });
+  };
+
+  handleButtonRatingChange = (review: string) => {
+    this.setState({ promptEval: review });
+  };
+
+  handleButtonRatingChange2 = (rating) => {
+    console.log('works');
+    this.setState({ selectedButtonIndex: rating });
   };
 
   private isNew() {

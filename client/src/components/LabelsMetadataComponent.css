@@ -1,0 +1,103 @@
+/* LabelsMetadataComponent.css */
+.labels-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+/* Increase the size of the input form */
+.input-form {
+  width: 50%; /* Set the input form to take the full width */
+
+  font-size: 16px; /* Increase the font size */
+  /* Add a border to the input form */
+  border-radius: 8px; /* Add rounded edges */
+  padding: 10px; /* Add padding to the comments container */
+}
+
+/* Style for the comments container */
+.comments-container {
+  flex: 1; /* Take the available space in the second column */
+  margin-left: 20px; /* Add some spacing between the two columns */
+  display: flex; /* Use flexbox to arrange items horizontally */
+  flex-direction: column; /* Align items in a column */
+  align-items: flex-start;
+  /* Align items to the left */
+  border-radius: 8px; /* Add rounded edges */
+  padding: 10px; /* Add padding to the comments container */
+}
+
+/* Style for the comments textarea */
+.comment-input {
+  width: 100%; /* Set the textarea to take the full width */
+  padding: 10px; /* Add padding to the textarea */
+  font-size: 16px; /* Increase the font size */
+  border: 1px solid #1976d2; /* Add a border to the textarea */
+  border-radius: 4px; /* Add border radius */
+  resize: vertical; /* Allow vertical resizing of the textarea */
+}
+
+.add-label-btn {
+  align-self: flex-end; /* Align the button to the right */
+  margin-top: 2px; /* Add some top margin for spacing */
+  margin-right: 200px; /* Add margin to shift the button to the right */
+  font-size: 14px; /* Set a smaller font size */
+  padding: 6px 12px; /* Adjust padding to make the button slightly smaller */
+}
+
+.save-button {
+  margin-top: 430px; /* Shift the button to the bottom */
+  font-size: 18px; /* Increase the font size to make the button larger */
+  padding: 14px 28px;
+  background-color: #b2dfdb; /* Make the button pastel green */
+  color: #ffffff; /* Set the text color to white */
+}
+
+.label-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.label-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e3f2fd;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.label-tag span {
+  margin-right: 8px;
+}
+
+/* Style for the SVG icon */
+.label-tag svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  cursor: pointer;
+}
+
+/* Style for the discard cross icon */
+.label-tag svg.bi-x:hover {
+  color: #f44336;
+}
+
+/* Generate different colors for each label */
+/* Style for the even-numbered (2n) label tags */
+.label-tag:nth-child(2n) {
+  background-color: #ffe0b2; /* Pastel yellow */
+}
+
+.label-tag:nth-child(3n) {
+  background-color: #ffcdd2;
+  color: #c2185b;
+}
+
+.label-tag:nth-child(4n) {
+  background-color: #bbdefb;
+  color: #1976d2;
+}
+
+/* Add more color styles as needed */
