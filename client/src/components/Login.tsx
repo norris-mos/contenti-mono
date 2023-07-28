@@ -22,7 +22,7 @@ export default class Login extends React.Component<
   }
 
   private login = (username: any) => {
-    fetch('http://localhost:8080/login', {
+    fetch('http://localhost:server/login', {
       method: 'POST',
       headers: {
         Accept: 'application/json, text/plain, */*',
@@ -66,7 +66,7 @@ export default class Login extends React.Component<
   };
 
   logout = () => {
-    fetch('http://localhost:8080/logout', {
+    fetch('http://server:8080/logout', {
       method: 'POST',
       headers: {
         Accept: 'application/json, text/plain, */*',

@@ -19,8 +19,8 @@
   },
   "libraryConfig": {
     "H5P.ShareDBTest": {
-      "serverUrl": "ws://localhost:8080/shared-state",
-      "auth": "http://localhost:8080/auth-data"
+      "serverUrl": "ws://server:8080/shared-state",
+      "auth": "http://server:8080/auth-data"
     }
   }
 }

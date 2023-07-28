@@ -36,7 +36,7 @@ export class ContentService implements IContentService {
    */
 
   // THIS IS NORMALLU EMPTY
-  constructor(protected baseUrl: string = 'http://localhost:8080/') {}
+  constructor(protected baseUrl: string = 'http://server:8080/') {}
 
   private csrfToken: string | undefined = undefined;
 
@@ -101,18 +101,23 @@ export class ContentService implements IContentService {
     contentType: string
   ): Promise<IPromptResponses> => {
     console.log('Generating content...');
+    const content_type = 'H5P.DragText%201.10';
+    console.log('ctpe is ', contentType);
 
-    const url = `http://localhost:8080/prompt/${contentType}`;
+    //const url = `http://localhost:8080/h5p/prompt/${content_type}`;
+    const url = `http://localhost:8080/prompt/${content_type}`;
 
     const requestOptions: RequestInit = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ promptText, contentType }),
+      body: JSON.stringify({ promptText, content_type }),
     };
 
     try {
+      console.log('this is were it breaks down: Requst opt', requestOptions);
+
       const response = await fetch(url, requestOptions);
 
       if (!response.ok) {
@@ -208,6 +213,9 @@ export class ContentService implements IContentService {
     if (!res || !res.ok) {
       throw new Error(`${res.status} ${res.statusText} - ${await res.text()}`);
     }
+
+    // add db save here
+
     return res.json();
   };
   generateDownloadLink = (contentId: string): string =>
