@@ -9,6 +9,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import session from 'express-session';
 import csurf from 'csurf';
+import cors from 'cors'; // Import the cors package
 
 import {
   h5pAjaxExpressRouter,
@@ -190,26 +191,41 @@ const start = async (): Promise<void> => {
   // We now set up the Express server in the usual fashion.
   const server = express();
 
-  // i removed the authorization header
-  server.use((req, res, next) => {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://www.getpostman.com',
-    ];
-    const origin = req.headers.origin;
+  server.use(
+    cors({
+      origin: ['http://localhost:3000', 'https://www.getpostman.com'], // Add other allowed origins as needed
+      methods: 'GET, POST, PUT, DELETE, PATCH',
+      allowedHeaders: 'Content-Type, csrf-token, Authorization',
+      credentials: true,
+    })
+  );
 
-    if (allowedOrigins.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
-    }
-
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Content-Type, csrf-token, Authorization'
-    );
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
+  server.options('/prompt/:content_type', cors(), (req, res) => {
+    res.sendStatus(200); // Respond with 200 status for preflight request
   });
+  // i removed the authorization header
+  // server.use((req, res, next) => {
+  //   const allowedOrigins = [
+  //     'http://localhost:3000',
+  //     'https://www.getpostman.com',
+  //   ];
+  //   const origin = req.headers.origin;
+
+  //   if (allowedOrigins.includes(origin)) {
+  //     console.log('The cors policy is working', origin);
+  //     res.header('Access-Control-Allow-Origin', origin);
+  //   } else {
+  //     console.log('cors policy not workings', origin);
+  //   }
+
+  //   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+  //   res.header(
+  //     'Access-Control-Allow-Headers',
+  //     'Content-Type, csrf-token, Authorization'
+  //   );
+  //   res.header('Access-Control-Allow-Credentials', 'true');
+  //   next();
+  // });
 
   server.use(bodyParser.json({ limit: '500mb' }));
   server.use(
@@ -384,7 +400,10 @@ const start = async (): Promise<void> => {
   // make sure to get the correct content names testin
 
   server.post('/prompt/:content_type', async (req, res) => {
-    switch (req.body.contentType) {
+    console.log('recieved m tom');
+    const contentType = req.params.content_type;
+    console.log('does this match the switch statement', contentType);
+    switch (contentType) {
       case 'H5P.DragText 1.10':
         const resp = await H5PDragText(req.body.promptText);
 
@@ -402,6 +421,8 @@ const start = async (): Promise<void> => {
         break;
     }
   });
+
+  //server.post('/metadata/save', async (req: Request, res: Response) => {});
 
   // Simple login endpoint that returns HTTP 200 on auth and sets the user in
   // the session

@@ -355,6 +355,9 @@ export default class ContentListEntryComponent extends React.Component<{
                         Negligibly Better / Unsure
                       </button>
                     </div>
+                    <div>
+                      <button>Save Metadata</button>
+                    </div>
                   </div>
                 )}
 
