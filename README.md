@@ -59,3 +59,44 @@ The metadata database service stores collected data for prompt analysis and rein
 ## Get Started
 
 To explore the implementation details and code, feel free to clone this repository and review the source files. If you have any questions or feedback, please don't hesitate to reach out to our team. We hope you find the Contenti platform's implementation insightful and informative.
+
+
+## Running the Code
+
+To run the Contenti platform, you can use Docker Compose to simplify the setup process. Follow these steps to get started:
+
+1. **Prerequisites**: Make sure you have Docker and Docker Compose installed on your system.
+
+2. **Clone the Repository**: Clone this GitHub repository to your local machine:
+
+   ```bash
+   git clone https://github.com/your-username/Contenti.git
+   ```
+
+3. **Navigate to the Repository**: Move into the cloned repository's directory:
+
+   ```bash
+   cd Contenti
+   ```
+
+4. **Build and Launch Containers**: Run the following command to build and launch the containers using Docker Compose:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   This command will initiate the building process for the necessary containers and start the platform. You might need administrative privileges to execute Docker commands.
+
+5. **Access the Platform**: Once the containers are up and running, you can access the Contenti platform by opening your web browser and navigating to `http://localhost:3000`.
+
+6. **Interact with the Platform**: Explore the features and functionalities of the platform. You can create, edit, and view H5P content, generate content using the PLM service, and engage in various interactive learning experiences.
+
+7. **Stopping the Platform**: To stop the platform and shut down the containers, you can use the keyboard shortcut `Ctrl + C` in the terminal where you launched the Docker Compose command. This will gracefully stop the containers and services.
+
+## Troubleshooting
+
+If you encounter any issues during the setup process or while running the platform, make sure you have followed the steps correctly and that your system meets the prerequisites. Additionally, check the terminal output for any error messages or logs that might provide insights into the problem.
+
+If you need further assistance or have questions, feel free to reach out to our support team or refer to the platform's documentation.
+
+Happy exploring and learning with the Contenti platform!
