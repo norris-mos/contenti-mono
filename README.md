@@ -70,7 +70,7 @@ To run the Contenti platform, you can use Docker Compose to simplify the setup p
 2. **Clone the Repository**: Clone this GitHub repository to your local machine:
 
    ```bash
-   git clone https://github.com/your-username/Contenti.git](https://github.com/norris-mos/contenti-mono.git
+   git clone https://github.com/norris-mos/contenti-mono.git
    ```
 
 3. **Navigate to the Repository**: Move into the cloned repository's directory:
