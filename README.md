@@ -14,7 +14,7 @@ Contenti utilizes a Hybrid Microservice-based Client-Server architecture to prov
 - **Independently deployable:** Microservices can be deployed individually, ensuring that the failure of one service does not disrupt the others.
 - **Scalability:** Individual microservices can be scaled up as needed, optimizing resource allocation.
 
-![Architecture Diagram](images/architecture.png)
+![Architecture Diagram](architecture.png)
 
 ### Containerization
 
